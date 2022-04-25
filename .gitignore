@@ -58,3 +58,11 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Ignored Files
+MoneySplurge/Library/
+MoneySplurge/.vs/
+MoneySplurge/Logs/
+MoneySplurge/MoneySplurge.sln/
+MoneySplurge/UserSettings/
+MoneySplurge/.vsconfig/
+MoneySplurge/.Assembly-CSharp.csproj/
