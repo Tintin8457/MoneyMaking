@@ -138,12 +138,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   jumpForce: 7
+  creditCard: 0
   rentAmount: 11
   averageRent: 1175
   currentRent: 0
+  round: 1
+  maxRounds: 2
+  canDestroyBarrier: 0
+  roundText: {fileID: 0}
+  payChoices: {fileID: 0}
   currentRentText: {fileID: 0}
+  creditCardAmount: {fileID: 0}
+  lowAmountMessage: {fileID: 0}
   speedIncrease: 3
   rentEarnDecrease: 3
   speedDuration: 5
   increasedSpeed: 0
-  rentIncrease: 0
+  ticket: 15
+  carBill: 200
+  ticketPayment: {fileID: 0}
+  confirm: {fileID: 0}

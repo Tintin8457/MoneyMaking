@@ -37,20 +37,36 @@ public class Shopkeeper : MonoBehaviour
         if (option1 == true)
         {
             //The player will have an increased rent gain
-            if (player.currentRent >= 8.00f)
-            {
-                player.rentIncrease = true;
-                player.currentRent -= 8.00f;
+            //if (player.currentRent >= 8.00f)
+            //{
+            //    player.rentIncrease = true;
+            //    player.currentRent -= 8.00f;
 
-                confirmationText.text = "You have purchased an incresed rent gain upgrade!";
+            //    confirmationText.text = "You have purchased an incresed rent gain upgrade!";
+            //    purchaseConfirmation.SetActive(true);
+            //    option1 = false;
+            //}
+
+            //Display a pop-up that the player cannot buy the upgrade
+            //else if (player.currentRent < 8.00f)
+            //{
+            //    confirmationText.text = "You don't have enough money to buy the selected upgrade!";
+            //    purchaseConfirmation.SetActive(true);
+            //    option1 = false;
+            //}
+
+            if (player.currentRent > 0.00f)
+            {
+                player.creditCard -= player.creditCard;
+
+                confirmationText.text = "You paid off the credit card!";
                 purchaseConfirmation.SetActive(true);
                 option1 = false;
             }
 
-            //Display a pop-up that the player cannot buy the upgrade
-            else if (player.currentRent < 8.00f)
+            else if (player.currentRent <= 0.00f)
             {
-                confirmationText.text = "You don't have enough money to buy the selected upgrade!";
+                confirmationText.text = "You don't have enough money to pay off the credit card!";
                 purchaseConfirmation.SetActive(true);
                 option1 = false;
             }
@@ -67,7 +83,7 @@ public class Shopkeeper : MonoBehaviour
 
                 confirmationText.text = "You have purchased a speed increase!";
                 purchaseConfirmation.SetActive(true);
-                //option2 = false;
+                option2 = false;
             }
 
             //Display a pop-up that the player cannot buy the upgrade

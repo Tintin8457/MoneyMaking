@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     public float speed = 5.0f;
     private Rigidbody2D playerRigidBody;
     public int jumpForce = 7;
-    
+    public float creditCard = 0;
     private int jumpAmount = 0;
     private int maxJump = 1;
 
@@ -27,6 +27,8 @@ public class Player : MonoBehaviour
 
     [Header("UI")]
     public TextMeshProUGUI currentRentText;
+    public TextMeshProUGUI creditCardAmount;
+    public TextMeshProUGUI lowAmountMessage;
 
     [Header("Speed PowerUp")]
     public float speedIncrease = 3.0f;
@@ -34,24 +36,27 @@ public class Player : MonoBehaviour
     public float speedDuration = 5.0f;
     public bool increasedSpeed = false;
 
-    [Header("Shop")]
-    public bool rentIncrease = false;
-
     [Header("Other Hoops")]
-    public int tickets = 0;
+    public int ticket = 15;
     public int carBill = 200;
+    public GameObject ticketPayment;
+    public GameObject confirm;
+    public bool ticketPaid = false;
 
     // Start is called before the first frame update
     void Start()
     {
         playerRigidBody = GetComponent<Rigidbody2D>();
         payChoices.SetActive(false);
+        ticketPayment.SetActive(false);
+        lowAmountMessage.text = "";
     }
 
     // Update is called once per frame
     void Update()
     {
         currentRentText.text = "Current Rent: $" + currentRent.ToString("F2");
+        creditCardAmount.text = "Credit Card: $" + creditCard.ToString("F2");
         roundText.text = "Round: " + round.ToString() + "/" + maxRounds.ToString();
 
         //Jump only once
@@ -139,8 +144,9 @@ public class Player : MonoBehaviour
         //Get a ticket for getting a siren
         if (game.CompareTag("Siren"))
         {
-            tickets += 1;
-            Destroy(game.gameObject);
+            //tickets += 1;
+            ticketPayment.SetActive(true);
+            Time.timeScale = 0;
         }
 
         //Pay a $200 bill if they get a car
@@ -170,29 +176,44 @@ public class Player : MonoBehaviour
         if (hoop.CompareTag("Hoop"))
         {
             Destroy(hoop.gameObject, 0.5f);
+
+            ticketPayment.SetActive(false);
+            confirm.SetActive(false);
         }
     }
 
     //Earn rent after collecting cash
     public void EarnRent(float rent)
     {
-        //Earn the normal amount of rent
-        if (rentIncrease == false)
-        {
-            currentRent += rent;
-        }
+        currentRent += rent;
 
-        //Earn the double amount of rent
-        else if (rentIncrease == true)
-        {
-            currentRent += rent * 2;
-        }
+        //Add to credit card
+        creditCard += rent;
     }
 
     //Increase speed of the player
     public void IncreaseSpeed(float newSpeed)
     {
         speed += newSpeed;
-        Debug.Log(speed);
+        increasedSpeed = true;
+    }
+
+    //For police
+    //Pay ticket when ran into cop
+    public void PayTicket()
+    {
+        currentRent -= ticket;
+
+        lowAmountMessage.text = "You paid for a ticket!";
+        confirm.SetActive(true);
+    }
+
+    //Exit ticket pay popup
+    public void Exit()
+    {
+        ticketPayment.SetActive(false);
+        confirm.SetActive(false);
+        Time.timeScale = 1;
+        ticketPaid = true;
     }
 }

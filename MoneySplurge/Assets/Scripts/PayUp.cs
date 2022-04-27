@@ -6,7 +6,6 @@ using TMPro;
 public class PayUp : MonoBehaviour
 {
     private Player player;
-    public float creditCard = 0;
     public GameObject notEnough;
     public TextMeshProUGUI lowAmountMessage;
 
@@ -22,12 +21,6 @@ public class PayUp : MonoBehaviour
         {
             player = taxPayer.GetComponent<Player>();
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     //If all funds are available, pay the funds
@@ -54,33 +47,40 @@ public class PayUp : MonoBehaviour
         //Add the current money to credit card debt
         if (player.currentRent > 0)
         {
-            creditCard += player.currentRent;
-            player.currentRent -= creditCard;
+            player.creditCard += player.currentRent;
+            player.currentRent -= player.currentRent;
 
             lowAmountMessage.text = "Your added money into the credit card!";
             notEnough.SetActive(true);
         }
 
         //Add the current money to credit card debt
-        else if (player.currentRent == 0)
+        else if (player.currentRent <= 0)
         {
             lowAmountMessage.text = "You don't have enough money to add to your debt!";
             notEnough.SetActive(true);
         }
     }
 
-    //If all funds are available, pay the funds
-    public void ExitDialog()
-    {
-        notEnough.SetActive(false);
-    }
-
     //Exit from pay prompt
     public void Exit()
     {
+        notEnough.SetActive(false);
         gameObject.SetActive(false);
         Time.timeScale = 1;
         player.round++;
         player.canDestroyBarrier = true;
+    }
+
+    //Pay ticket when ran into cop
+    public void TicketFine()
+    {
+        player.PayTicket();
+    }
+
+    //Exit ticket pay popup
+    public void ExitPolice()
+    {
+        player.Exit();
     }
 }
