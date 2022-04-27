@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
     [Header("Player")]
     public float speed = 5.0f;
     private Rigidbody2D playerRigidBody;
+    public Animator playerAnim;
+    public SpriteRenderer sprite;
     public int jumpForce = 7;
     public float creditCard = 0;
     private int jumpAmount = 0;
@@ -64,6 +66,7 @@ public class Player : MonoBehaviour
         {
             if (jumpAmount > 0)
             {
+                ChangePlayerState(2);
                 playerRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
                 jumpAmount -= 1;
             }
@@ -92,6 +95,29 @@ public class Player : MonoBehaviour
             rentAmount = 11.00f;
             speedDuration = 5.0f;
         }
+
+        //Anims
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            ChangePlayerState(0);
+        }
+
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+            ChangePlayerState(1);
+            sprite.flipX = true;
+        }
+
+        if (Input.GetKeyUp(KeyCode.D))
+        {
+            ChangePlayerState(0);
+        }
+
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            ChangePlayerState(1);
+            sprite.flipX = false;
+        }
     }
 
     void FixedUpdate()
@@ -114,6 +140,7 @@ public class Player : MonoBehaviour
         if (ground.gameObject.CompareTag("Ground"))
         {
             jumpAmount = maxJump;
+            ChangePlayerState(0);
         }
     }
 
@@ -215,5 +242,11 @@ public class Player : MonoBehaviour
         confirm.SetActive(false);
         Time.timeScale = 1;
         ticketPaid = true;
+    }
+
+    //Change state of the player
+    public void ChangePlayerState(int state)
+    {
+        playerAnim.SetInteger("ChangeType", state);
     }
 }
