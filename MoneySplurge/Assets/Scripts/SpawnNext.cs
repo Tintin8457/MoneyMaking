@@ -12,12 +12,6 @@ public class SpawnNext : MonoBehaviour
         hoopSpawner.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //Spawn next wave
     private void OnTriggerEnter2D(Collider2D player)
     {

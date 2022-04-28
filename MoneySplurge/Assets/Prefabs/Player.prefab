@@ -138,28 +138,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  playerAnim: {fileID: 1966400715}
+  sprite: {fileID: 6143855113434582242}
   jumpForce: 7
-  creditCard: 0
+  readyToPlay: 0
   rentAmount: 11
   averageRent: 1175
-  currentRent: 0
+  currentRent: 1050
+  hasPaid: 0
   round: 1
   maxRounds: 2
   canDestroyBarrier: 0
   roundText: {fileID: 0}
   payChoices: {fileID: 0}
   currentRentText: {fileID: 0}
-  creditCardAmount: {fileID: 0}
   lowAmountMessage: {fileID: 0}
   speedIncrease: 3
   rentEarnDecrease: 3
-  speedDuration: 5
+  speedDuration: 10
   increasedSpeed: 0
   ticket: 15
   carBill: 200
   ticketPayment: {fileID: 0}
   confirm: {fileID: 0}
   ticketPaid: 0
+  paidCar: 0
+  paidCop: 0
+  debuffsOff: 0
+  debuffDuration: 10
 --- !u!95 &1966400715
 Animator:
   serializedVersion: 4

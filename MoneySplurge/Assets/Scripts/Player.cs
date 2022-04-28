@@ -11,14 +11,15 @@ public class Player : MonoBehaviour
     public Animator playerAnim;
     public SpriteRenderer sprite;
     public int jumpForce = 7;
-    public float creditCard = 0;
     private int jumpAmount = 0;
     private int maxJump = 1;
+    public bool readyToPlay = false;
 
     [Header("Rent")]
     public float rentAmount = 11.00f;
     public float averageRent = 1175.00f;
     public float currentRent = 0.00f;
+    public bool hasPaid = false;
 
     [Header("Round")]
     public int round = 1;
@@ -29,48 +30,45 @@ public class Player : MonoBehaviour
 
     [Header("UI")]
     public TextMeshProUGUI currentRentText;
-    public TextMeshProUGUI creditCardAmount;
-    public TextMeshProUGUI lowAmountMessage;
 
     [Header("Speed PowerUp")]
     public float speedIncrease = 3.0f;
     public float rentEarnDecrease = 3.00f;
-    public float speedDuration = 5.0f;
+    public float speedDuration = 10.0f;
     public bool increasedSpeed = false;
 
     [Header("Other Hoops")]
     public int ticket = 15;
     public int carBill = 200;
-    public GameObject ticketPayment;
-    public GameObject confirm;
     public bool ticketPaid = false;
+    public bool paidCar = false;
+    public bool paidCop = false;
+    public bool debuffsOff = false;
+    public float debuffDuration = 10.0f;
 
     // Start is called before the first frame update
     void Start()
     {
         playerRigidBody = GetComponent<Rigidbody2D>();
         payChoices.SetActive(false);
-        ticketPayment.SetActive(false);
-        lowAmountMessage.text = "";
     }
 
     // Update is called once per frame
     void Update()
     {
-        currentRentText.text = "Current Rent: $" + currentRent.ToString("F2");
-        creditCardAmount.text = "Credit Card: $" + creditCard.ToString("F2");
-        roundText.text = "Round: " + round.ToString() + "/" + maxRounds.ToString();
+        currentRentText.text = "Bills: $" + currentRent.ToString("F2");
+        roundText.text = "Month: " + round.ToString() + "/" + maxRounds.ToString();
 
-        //Jump only once
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (currentRent < 0f)
         {
-            if (jumpAmount > 0)
-            {
-                ChangePlayerState(2);
-                playerRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-                jumpAmount -= 1;
-            }
+            currentRentText.color = new Color32(255, 0, 0, 255);
         }
+
+        else if (currentRent >= 0f)
+        {
+            currentRentText.color = new Color32(255, 255, 255, 255);
+        }
+
 
         //Increased Speed pickup is being used
         if (increasedSpeed == true)
@@ -82,7 +80,7 @@ public class Player : MonoBehaviour
             }
 
             //Speed Pickup is done being used
-            if (speedDuration <= 0f)
+            else if (speedDuration <= 0f)
             {
                 increasedSpeed = false;
             }
@@ -93,44 +91,94 @@ public class Player : MonoBehaviour
         {
             speed = 5;
             rentAmount = 11.00f;
-            speedDuration = 5.0f;
+            speedDuration = 10.0f;
         }
 
-        //Anims
-        if (Input.GetKeyUp(KeyCode.A))
+        //Debuffs are removed
+        if (debuffsOff == true)
         {
-            ChangePlayerState(0);
+            //Countdown until the increased speed use is up
+            if (debuffDuration > 0f)
+            {
+                debuffDuration -= Time.deltaTime;
+            }
+
+            //Speed Pickup is done being used
+            if (debuffDuration <= 0f)
+            {
+                debuffsOff = false;
+            }
         }
 
-        else if (Input.GetKeyDown(KeyCode.A))
+        //Debuffs are back
+        else if (debuffsOff == false)
         {
-            ChangePlayerState(1);
-            sprite.flipX = true;
+            debuffDuration = 10.0f;
+
+            paidCar = true;
+            paidCop = true;
         }
 
-        if (Input.GetKeyUp(KeyCode.D))
+        //Jump only once
+        if (readyToPlay == true)
         {
-            ChangePlayerState(0);
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (jumpAmount > 0)
+                {
+                    ChangePlayerState(2);
+                    playerRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+                    jumpAmount -= 1;
+                }
+            }
         }
 
-        else if (Input.GetKeyDown(KeyCode.D))
+        if (readyToPlay == true && Time.timeScale == 1)
         {
-            ChangePlayerState(1);
-            sprite.flipX = false;
+            //Anims
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                ChangePlayerState(0);
+            }
+
+            else if (Input.GetKeyDown(KeyCode.A))
+            {
+                ChangePlayerState(1);
+                sprite.flipX = true;
+            }
+
+            if (Input.GetKeyUp(KeyCode.D))
+            {
+                ChangePlayerState(0);
+            }
+
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                ChangePlayerState(1);
+                sprite.flipX = false;
+            }
+        }
+
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
         }
     }
 
     void FixedUpdate()
     {
         //Move with A and D in game
-        if (Input.GetKey(KeyCode.A))
+        if (readyToPlay == true)
         {
-            transform.position += -transform.right * Time.deltaTime * speed;
-        }
+            if (Input.GetKey(KeyCode.A))
+            {
+                transform.position += Time.deltaTime * speed * -transform.right;
+            }
 
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.position += transform.right * Time.deltaTime * speed;
+            if (Input.GetKey(KeyCode.D))
+            {
+                transform.position += Time.deltaTime * speed * transform.right;
+            }
         }
     }
 
@@ -171,15 +219,16 @@ public class Player : MonoBehaviour
         //Get a ticket for getting a siren
         if (game.CompareTag("Siren"))
         {
-            //tickets += 1;
-            ticketPayment.SetActive(true);
-            Time.timeScale = 0;
+            currentRent -= ticket;
+            paidCop = true;
+            Destroy(game.gameObject);
         }
 
         //Pay a $200 bill if they get a car
         if (game.CompareTag("Car"))
         {
             currentRent -= carBill;
+            paidCar = true;
             Destroy(game.gameObject);
         }
 
@@ -203,9 +252,6 @@ public class Player : MonoBehaviour
         if (hoop.CompareTag("Hoop"))
         {
             Destroy(hoop.gameObject, 0.5f);
-
-            ticketPayment.SetActive(false);
-            confirm.SetActive(false);
         }
     }
 
@@ -213,9 +259,6 @@ public class Player : MonoBehaviour
     public void EarnRent(float rent)
     {
         currentRent += rent;
-
-        //Add to credit card
-        creditCard += rent;
     }
 
     //Increase speed of the player
@@ -223,25 +266,6 @@ public class Player : MonoBehaviour
     {
         speed += newSpeed;
         increasedSpeed = true;
-    }
-
-    //For police
-    //Pay ticket when ran into cop
-    public void PayTicket()
-    {
-        currentRent -= ticket;
-
-        lowAmountMessage.text = "You paid for a ticket!";
-        confirm.SetActive(true);
-    }
-
-    //Exit ticket pay popup
-    public void Exit()
-    {
-        ticketPayment.SetActive(false);
-        confirm.SetActive(false);
-        Time.timeScale = 1;
-        ticketPaid = true;
     }
 
     //Change state of the player

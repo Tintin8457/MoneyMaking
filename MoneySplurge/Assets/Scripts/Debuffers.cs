@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Police : MonoBehaviour
+public class Debuffers : MonoBehaviour
 {
     private Player player;
 
@@ -20,10 +20,14 @@ public class Police : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (player.ticketPaid == true)
+        if (player.debuffsOff == true)
         {
-            Destroy(gameObject);
-            player.ticketPaid = false;
+            gameObject.SetActive(false);
+        }
+
+        else if (player.debuffsOff == false)
+        {
+            gameObject.SetActive(true);
         }
     }
 }

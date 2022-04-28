@@ -8,6 +8,8 @@ public class PayUp : MonoBehaviour
     private Player player;
     public GameObject notEnough;
     public TextMeshProUGUI lowAmountMessage;
+    public Sam uncleSam;
+    public TextMeshProUGUI backButton;
 
     // Start is called before the first frame update
     void Start()
@@ -32,55 +34,39 @@ public class PayUp : MonoBehaviour
 
             lowAmountMessage.text = "Your rent has been paid!";
             notEnough.SetActive(true);
+            uncleSam.Win();
         }
 
         //Cannot pay because lack of funds
         else
         {
-            lowAmountMessage.text = "You don't have enough funds to pay rent!";
+            lowAmountMessage.text = "You're broke!";
             notEnough.SetActive(true);
-        }
-    }
-
-    public void CreditCard()
-    {
-        //Add the current money to credit card debt
-        if (player.currentRent > 0)
-        {
-            player.creditCard += player.currentRent;
-            player.currentRent -= player.currentRent;
-
-            lowAmountMessage.text = "Your added money into the credit card!";
-            notEnough.SetActive(true);
+            uncleSam.Lose();
         }
 
-        //Add the current money to credit card debt
-        else if (player.currentRent <= 0)
+        if (uncleSam.win == true || uncleSam.lose == true)
         {
-            lowAmountMessage.text = "You don't have enough money to add to your debt!";
-            notEnough.SetActive(true);
+            backButton.text = "Quit";
         }
     }
 
     //Exit from pay prompt
     public void Exit()
     {
-        notEnough.SetActive(false);
-        gameObject.SetActive(false);
-        Time.timeScale = 1;
-        player.round++;
-        player.canDestroyBarrier = true;
-    }
+        if (uncleSam.win == false && uncleSam.lose == false)
+        {
+            notEnough.SetActive(false);
+            gameObject.SetActive(false);
+            Time.timeScale = 1;
+            player.round++;
+            player.canDestroyBarrier = true;
+            player.hasPaid = true;
+        }
 
-    //Pay ticket when ran into cop
-    public void TicketFine()
-    {
-        player.PayTicket();
-    }
-
-    //Exit ticket pay popup
-    public void ExitPolice()
-    {
-        player.Exit();
+        else if (uncleSam.win == true || uncleSam.lose == true)
+        {
+            Application.Quit();
+        }
     }
 }

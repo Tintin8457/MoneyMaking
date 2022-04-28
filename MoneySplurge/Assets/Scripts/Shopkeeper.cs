@@ -12,7 +12,9 @@ public class Shopkeeper : MonoBehaviour
     public float speedIncrease = 3.0f;
 
     public bool option1 = false;
+    public bool option1Purchased = false;
     public bool option2 = false;
+    public bool salesMade = false;
 
     private Player player;
 
@@ -33,40 +35,30 @@ public class Shopkeeper : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (salesMade == true)
+        {
+            StartCoroutine(ResetShop());
+        }
+
         //Player chooses the first option
         if (option1 == true)
         {
-            //The player will have an increased rent gain
-            //if (player.currentRent >= 8.00f)
-            //{
-            //    player.rentIncrease = true;
-            //    player.currentRent -= 8.00f;
-
-            //    confirmationText.text = "You have purchased an incresed rent gain upgrade!";
-            //    purchaseConfirmation.SetActive(true);
-            //    option1 = false;
-            //}
-
-            //Display a pop-up that the player cannot buy the upgrade
-            //else if (player.currentRent < 8.00f)
-            //{
-            //    confirmationText.text = "You don't have enough money to buy the selected upgrade!";
-            //    purchaseConfirmation.SetActive(true);
-            //    option1 = false;
-            //}
-
-            if (player.currentRent > 0.00f)
+            //The player has paid to remove their debuffs
+            if (player.currentRent > 100.00f)
             {
-                player.creditCard -= player.creditCard;
-
-                confirmationText.text = "You paid off the credit card!";
-                purchaseConfirmation.SetActive(true);
-                option1 = false;
+                if (player.paidCar == true || player.paidCop == true)
+                {
+                    player.currentRent -= 100.00f;
+                    confirmationText.text = "The debuffs are now removed!";
+                    purchaseConfirmation.SetActive(true);
+                    option1Purchased = true;
+                    option1 = false;
+                }
             }
 
-            else if (player.currentRent <= 0.00f)
+            else if (player.currentRent <= 100.00f)
             {
-                confirmationText.text = "You don't have enough money to pay off the credit card!";
+                confirmationText.text = "You don't have enough money to remove debuffs!";
                 purchaseConfirmation.SetActive(true);
                 option1 = false;
             }
@@ -76,10 +68,10 @@ public class Shopkeeper : MonoBehaviour
         if (option2 == true)
         {
             //The player will have an increased speed
-            if (player.currentRent >= 15.00f)
+            if (player.currentRent >= 100.00f)
             {
                 player.IncreaseSpeed(speedIncrease);
-                player.currentRent -= 15.00f;
+                player.currentRent -= 100.00f;
 
                 confirmationText.text = "You have purchased a speed increase!";
                 purchaseConfirmation.SetActive(true);
@@ -87,9 +79,9 @@ public class Shopkeeper : MonoBehaviour
             }
 
             //Display a pop-up that the player cannot buy the upgrade
-            else if (player.currentRent < 15.00f)
+            else if (player.currentRent < 100.00f)
             {
-                confirmationText.text = "You don't have enough money to buy the selected upgrade!";
+                confirmationText.text = "You don't have enough money to buy the speed boost!";
                 purchaseConfirmation.SetActive(true);
                 option2 = false;
             }
@@ -101,17 +93,17 @@ public class Shopkeeper : MonoBehaviour
     {
         if (player.CompareTag("Player"))
         {
-            shop.SetActive(true);
-        }
-    }
+            if (salesMade == false)
+            {
+                shop.SetActive(true);
+                Time.timeScale = 0;
+            }
 
-    //Close the shop when the player is gone
-    private void OnTriggerExit2D(Collider2D player)
-    {
-        if (player.CompareTag("Player"))
-        {
-            shop.SetActive(false);
-            purchaseConfirmation.SetActive(false);
+            else if (salesMade == true)
+            {
+                shop.SetActive(false);
+                Time.timeScale = 1;
+            }
         }
     }
 
@@ -131,5 +123,22 @@ public class Shopkeeper : MonoBehaviour
     public void ExitConfirmation()
     {
         purchaseConfirmation.SetActive(false);
+        Time.timeScale = 1;
+        shop.SetActive(false);
+        salesMade = true;
+
+        if (option1Purchased == true)
+        {
+            player.debuffsOff = true;
+            option1Purchased = false;
+            player.paidCar = false;
+            player.paidCop = false;
+        }
+    }
+
+    IEnumerator ResetShop()
+    {
+        yield return new WaitForSeconds(2f);
+        salesMade = false;
     }
 }
