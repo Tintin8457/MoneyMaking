@@ -72,6 +72,11 @@ public class Sam : MonoBehaviour
             gameView.GetComponent<AutoRunner>().enabled = false;
             barrier.GetComponent<AutoRunner>().enabled = false;
             bg.GetComponent<AutoRunner>().enabled = false;
+
+            if (player.round < 2)
+            {
+                player.round++;
+            }
         }
 
         if (win == true)
@@ -81,6 +86,11 @@ public class Sam : MonoBehaviour
             gameView.GetComponent<AutoRunner>().enabled = false;
             barrier.GetComponent<AutoRunner>().enabled = false;
             bg.GetComponent<AutoRunner>().enabled = false;
+
+            if (player.round < 2)
+            {
+                player.round++;
+            }
         }
 
         if (player.hasPaid == true)
